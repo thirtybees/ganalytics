@@ -1,5 +1,4 @@
-<?php
-/**
+{*
  * 2007-2016 PrestaShop
  *
  * thirty bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
@@ -21,16 +20,15 @@
  * @copyright 2007-2016 PrestaShop SA
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  * PrestaShop is an internationally registered trademark & property of PrestaShop SA
- */
-
-if (!defined('_TB_VERSION_')) {
-    exit;
-}
-
-function upgrade_module_2_0_5($object)
-{
-    Configuration::updateValue('GANALYTICS', '2.0.5');
-
-    return ($object->registerHook('orderConfirmation')
-        && $object->unregisterHook('top'));
-}
+ *}
+<script type="text/javascript">
+  {literal}
+  (window.gaDevIds=window.gaDevIds||[]).push('d6YPbH');
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+  {/literal}
+  {if $userId && !$backOffice}ga('set', 'userId', '{$userId|escape:'javascript':'UTF-8'}');{/if}
+  {if $backOffice}ga('set', 'nonInteraction', true);{/if}
+</script>

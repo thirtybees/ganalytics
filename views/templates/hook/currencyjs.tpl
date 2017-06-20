@@ -1,5 +1,4 @@
-<?php
-/**
+{*
  * 2007-2016 PrestaShop
  *
  * thirty bees is an extension to the PrestaShop e-commerce software developed by PrestaShop SA
@@ -21,16 +20,10 @@
  * @copyright 2007-2016 PrestaShop SA
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  * PrestaShop is an internationally registered trademark & property of PrestaShop SA
- */
-
-if (!defined('_TB_VERSION_')) {
-    exit;
-}
-
-function upgrade_module_2_0_5($object)
-{
-    Configuration::updateValue('GANALYTICS', '2.0.5');
-
-    return ($object->registerHook('orderConfirmation')
-        && $object->unregisterHook('top'));
-}
+ *}
+<script type="text/javascript">
+  $(document).ready(function () {
+    GoogleAnalyticEnhancedECommerce.setCurrency('{Context::getContext()->currency->iso_code|escape:'javascript':'UTF-8'}');
+    {$jsCode}
+  });
+</script>
