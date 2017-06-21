@@ -47,7 +47,7 @@ class Ganalytics extends Module
     {
         $this->name = 'ganalytics';
         $this->tab = 'analytics_stats';
-        $this->version = '3.0.0';
+        $this->version = '3.0.1';
         $this->author = 'thirty bees';
         $this->bootstrap = true;
 
@@ -471,13 +471,15 @@ class Ganalytics extends Module
         if (isset($this->context->cookie->ga_cart)) {
             $this->filterable = 0;
 
-            $gacarts = unserialize($this->context->cookie->ga_cart);
-            foreach ($gacarts as $gacart) {
-                if ($gacart['quantity'] > 0) {
-                    $gaScripts .= 'MBG.addToCart('.json_encode($gacart).');';
-                } elseif ($gacart['quantity'] < 0) {
-                    $gacart['quantity'] = abs($gacart['quantity']);
-                    $gaScripts .= 'MBG.removeFromCart('.json_encode($gacart).');';
+            $gacarts = @json_decode($this->context->cookie->ga_cart);
+            if (is_array($gacarts)) {
+                foreach ($gacarts as $gacart) {
+                    if ($gacart['quantity'] > 0) {
+                        $gaScripts .= 'MBG.addToCart('.json_encode($gacart).');';
+                    } elseif ($gacart['quantity'] < 0) {
+                        $gacart['quantity'] = abs($gacart['quantity']);
+                        $gaScripts .= 'MBG.removeFromCart('.json_encode($gacart).');';
+                    }
                 }
             }
             unset($this->context->cookie->ga_cart);
@@ -896,7 +898,7 @@ class Ganalytics extends Module
             }
 
             if (isset($this->context->cookie->ga_cart)) {
-                $gacart = unserialize($this->context->cookie->ga_cart);
+                $gacart = @json_decode($this->context->cookie->ga_cart);
             } else {
                 $gacart = [];
             }
@@ -917,7 +919,7 @@ class Ganalytics extends Module
             }
 
             $gacart[$idProduct] = $gaProducts;
-            $this->context->cookie->ga_cart = serialize($gacart);
+            $this->context->cookie->ga_cart = json_encode($gacart);
         }
     }
 
