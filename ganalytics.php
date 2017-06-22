@@ -33,10 +33,15 @@ if (!defined('_TB_VERSION_')) {
 class Ganalytics extends Module
 {
     // @codingStandardsIgnoreStart
+    /** @var array $products */
     protected static $products = [];
+    /** @var int $js_state */
     protected $js_state = 0;
+    /** @var int $eligible */
     protected $eligible = 0;
+    /** @var int $filterable */
     protected $filterable = 1;
+    /** @var int $debugAnalytics */
     protected $debugAnalytics = 0;
     // @codingStandardsIgnoreEnd
 
