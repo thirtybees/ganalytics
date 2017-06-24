@@ -29,6 +29,8 @@
     m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
   {/literal}
+  ga('create', '{Configuration::get('GA_ACCOUNT_ID')|escape:'javascript':'UTF-8'}', 'auto');
+  ga('require', 'ec');
   {if $userId && !$backOffice}ga('set', 'userId', '{$userId|escape:'javascript':'UTF-8'}');{/if}
   {if $backOffice}ga('set', 'nonInteraction', true);{/if}
 </script>
