@@ -21,6 +21,17 @@
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  * PrestaShop is an internationally registered trademark & property of PrestaShop SA
  *}
+{if Configuration::get('GA_OPTIMIZE_ID')}
+{literal}
+  <style>.async-hide { opacity: 0 !important} </style>
+  <script>(function(a,s,y,n,c,h,i,d,e){s.className+=' '+y;h.start=1*new Date;
+      h.end=i=function(){s.className=s.className.replace(RegExp(' ?'+y),'')};
+      (a[n]=a[n]||[]).hide=h;setTimeout(function(){i();h.end=null},c);h.timeout=c;
+    })(window,document.documentElement,'async-hide','dataLayer',4000,
+            {'{/literal}{Configuration::get('GA_OPTIMIZE_ID')}{literal}':true});
+  </script>
+{/literal}
+{/if}
 <script type="text/javascript">
   {literal}
   (window.gaDevIds=window.gaDevIds||[]).push('d6YPbH');
@@ -31,6 +42,9 @@
   {/literal}
   ga('create', '{Configuration::get('GA_ACCOUNT_ID')|escape:'javascript':'UTF-8'}', 'auto');
   ga('require', 'ec');
+  {if Configuration::get('GA_OPTIMIZE_ID')}
+  ga('require', '{Configuration::get('GA_OPTIMIZE_ID')}');
+  {/if}
   {if $userId && !$backOffice}ga('set', 'userId', '{$userId|escape:'javascript':'UTF-8'}');{/if}
   {if $backOffice}ga('set', 'nonInteraction', true);{/if}
 </script>

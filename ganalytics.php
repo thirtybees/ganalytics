@@ -168,8 +168,10 @@ class Ganalytics extends Module
         $output = '';
         if (Tools::isSubmit('submit'.$this->name)) {
             $gaAccountId = Tools::getValue('GA_ACCOUNT_ID');
+            $gaOptimizeId = Tools::getValue('GA_OPTIMIZE_ID');
             if (!empty($gaAccountId)) {
                 Configuration::updateValue('GA_ACCOUNT_ID', $gaAccountId);
+                Configuration::updateValue('GA_OPTIMIZE_ID', $gaOptimizeId);
                 Configuration::updateValue('GANALYTICS_CONFIGURATION_OK', true);
                 $output .= $this->displayConfirmation($this->l('Account ID updated successfully'));
             }
@@ -251,6 +253,14 @@ class Ganalytics extends Module
                         ],
                     ],
                 ],
+                [
+                    'type'     => 'text',
+                    'label'    => $this->l('Google Optimize Testing ID'),
+                    'name'     => 'GA_OPTIMIZE_ID',
+                    'size'     => 20,
+                    'required' => false,
+                    'hint'     => $this->l('This is given to you in your Google Expriments account and is used for A/B testing.'),
+                ],
             ],
             'submit' => [
                 'title' => $this->l('Save'),
@@ -259,6 +269,7 @@ class Ganalytics extends Module
 
         // Load current value
         $helper->fields_value['GA_ACCOUNT_ID'] = Configuration::get('GA_ACCOUNT_ID');
+        $helper->fields_value['GA_OPTIMIZE_ID'] = Configuration::get('GA_OPTIMIZE_ID');
         $helper->fields_value['GA_USERID_ENABLED'] = Configuration::get('GA_USERID_ENABLED');
 
         return $helper->generateForm($fieldsForm);
