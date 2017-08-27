@@ -259,7 +259,7 @@ class Ganalytics extends Module
                     'name'     => 'GA_OPTIMIZE_ID',
                     'size'     => 20,
                     'required' => false,
-                    'hint'     => $this->l('This is given to you in your Google Expriments account and is used for A/B testing.'),
+                    'hint'     => $this->l('This is given to you in your Google Optimize account and is used for A/B testing.'),
                 ],
             ],
             'submit' => [
