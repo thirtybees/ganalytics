@@ -48,3 +48,28 @@
   {if $userId && !$backOffice}ga('set', 'userId', '{$userId|escape:'javascript':'UTF-8'}');{/if}
   {if $backOffice}ga('set', 'nonInteraction', true);{/if}
 </script>
+
+<script>
+  var isTracking = false;
+  ga(function(tracker) {
+    window.isTracking = true;
+  });
+  setTimeout(function(){
+    if(!isTracking)
+    {
+      function uuidv4() {
+        return ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
+          (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+        )
+      }
+
+      $.ajax({
+        type: 'post',
+        data: "trackid={Configuration::get('GA_ACCOUNT_ID')|escape:'javascript':'UTF-8'}&site="+baseDir+"&page="+location.pathname+'&uid='+uuidv4(),
+        url: baseDir + 'modules/ganalytics/ajax.php',
+        success: function(data){}
+      })
+    }
+  }, 5000)
+
+</script>
