@@ -52,7 +52,7 @@ class Ganalytics extends Module
     {
         $this->name = 'ganalytics';
         $this->tab = 'analytics_stats';
-        $this->version = '3.2.2';
+        $this->version = '3.2.3';
         $this->author = 'thirty bees';
         $this->bootstrap = true;
 
@@ -767,7 +767,7 @@ class Ganalytics extends Module
      */
     public function hookBackOfficeHeader()
     {
-        Media::addJsDef(['baseDir' => ((isset($useSSL) && $useSSL && Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://').Tools::getHttpHost().__PS_BASE_URI__]);
+        Media::addJsDef(['baseDir' => Tools::getShopProtocol().Tools::getHttpHost().__PS_BASE_URI__]);
 
         $js = '';
         if (strcmp(Tools::getValue('configure'), $this->name) === 0) {
