@@ -52,7 +52,7 @@ class Ganalytics extends Module
     {
         $this->name = 'ganalytics';
         $this->tab = 'analytics_stats';
-        $this->version = '3.2.1';
+        $this->version = '3.2.2';
         $this->author = 'thirty bees';
         $this->bootstrap = true;
 
@@ -761,10 +761,14 @@ class Ganalytics extends Module
     }
 
     /**
-     *  admin office header to add google analytics js
+     * admin office header to add google analytics js
+     *
+     * @return string
      */
     public function hookBackOfficeHeader()
     {
+        Media::addJsDef(['baseDir' => ((isset($useSSL) && $useSSL && Configuration::get('PS_SSL_ENABLED')) ? 'https://' : 'http://').Tools::getHttpHost().__PS_BASE_URI__]);
+
         $js = '';
         if (strcmp(Tools::getValue('configure'), $this->name) === 0) {
             $this->context->controller->addCSS($this->_path.'views/css/ganalytics.css');

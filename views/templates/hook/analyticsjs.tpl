@@ -67,7 +67,8 @@
         type: 'post',
         data: "trackid={Configuration::get('GA_ACCOUNT_ID')|escape:'javascript':'UTF-8'}&site="+baseDir+"&page="+location.pathname+'&uid='+uuidv4(),
         url: baseDir + 'modules/ganalytics/ajax.php',
-        success: function(data){}
+        success: function(data) {
+        }
       })
     }
   }, 5000)
