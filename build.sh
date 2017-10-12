@@ -3,6 +3,7 @@ CWD_BASENAME=${PWD##*/}
 
 FILES=("logo.gif")
 FILES+=("logo.png")
+FILES+=("ajax.php")
 FILES+=("${CWD_BASENAME}.php")
 FILES+=("Readme.md")
 FILES+=("controllers/**")
