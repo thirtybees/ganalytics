@@ -1,7 +1,7 @@
 module_name: Google Analytics
 compatible_versions: 1.0.0+
 author: thirty bees
-category: front office
+category: statistics
 tags:
   - google
   - analytics
