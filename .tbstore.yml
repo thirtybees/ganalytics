@@ -1,0 +1,14 @@
+module_name: Google Analytics
+compatible_versions: 1.0.0+
+author: thirty bees
+category: front office
+tags:
+  - google
+  - analytics
+  - google analytics
+  - eu law
+description_short: The Google Analytics module allows you to add your Google Analytics tracking code to your website.
+description: description.md
+images:
+  - image-1.png
+license: AFL
