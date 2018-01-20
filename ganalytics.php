@@ -52,7 +52,7 @@ class Ganalytics extends Module
     {
         $this->name = 'ganalytics';
         $this->tab = 'analytics_stats';
-        $this->version = '3.2.3';
+        $this->version = '3.3.4';
         $this->author = 'thirty bees';
         $this->bootstrap = true;
 
@@ -184,6 +184,11 @@ class Ganalytics extends Module
                 Configuration::updateValue('GA_USERID_ENABLED', (bool) $gaUseridEnabled);
                 $output .= $this->displayConfirmation($this->l('Settings for User ID updated successfully'));
             }
+            $gaIPEnabled = Tools::getValue('GA_IP_ENABLED');
+            if (null !== $gaIPEnabled) {
+                Configuration::updateValue('GA_IP_ENABLED', (bool) $gaIPEnabled);
+                $output .= $this->displayConfirmation($this->l('Settings for IP collection updated successfully'));
+            }
         }
 
         $output .= $this->displayForm();
@@ -258,6 +263,24 @@ class Ganalytics extends Module
                     ],
                 ],
                 [
+                    'type'   => 'radio',
+                    'label'  => $this->l('Anonymize IP addresses'),
+                    'name'   => 'GA_IP_ENABLED',
+                    'hint'   => $this->l('This is used to comply with EU laws on data collection'),
+                    'values' => [
+                        [
+                            'id'    => 'ga_ip_enabled',
+                            'value' => 1,
+                            'label' => $this->l('Enabled'),
+                        ],
+                        [
+                            'id'    => 'ga_ip_disabled',
+                            'value' => 0,
+                            'label' => $this->l('Disabled'),
+                        ],
+                    ],
+                ],
+                [
                     'type'     => 'text',
                     'label'    => $this->l('Google Optimize Testing ID'),
                     'name'     => 'GA_OPTIMIZE_ID',
@@ -283,6 +306,7 @@ class Ganalytics extends Module
         $helper->fields_value['GA_ACCOUNT_ID'] = Configuration::get('GA_ACCOUNT_ID');
         $helper->fields_value['GA_OPTIMIZE_ID'] = Configuration::get('GA_OPTIMIZE_ID');
         $helper->fields_value['GA_USERID_ENABLED'] = Configuration::get('GA_USERID_ENABLED');
+        $helper->fields_value['GA_IP_ENABLED'] = Configuration::get('GA_IP_ENABLED');
         $helper->fields_value['GA_OPTIMIZE_TIMER'] = Configuration::get('GA_OPTIMIZE_TIMER');
 
         return $helper->generateForm($fieldsForm);
@@ -316,6 +340,7 @@ class Ganalytics extends Module
         $this->context->smarty->assign([
             'GA_ACCOUNT_ID' => Configuration::get('GA_ACCOUNT_ID'),
             'userId'        => $userId,
+            'IP_ENABLED'    => Configuration::get('GA_IP_ENABLED'),
             'backOffice'    => $backOffice,
         ]);
 

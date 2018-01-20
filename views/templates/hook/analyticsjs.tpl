@@ -41,6 +41,9 @@
   })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
   {/literal}
   ga('create', '{Configuration::get('GA_ACCOUNT_ID')|escape:'javascript':'UTF-8'}', 'auto');
+  {if $IP_ENABLED}
+  ga('set', 'anonymizeIp', true);
+  {/if}
   ga('require', 'ec');
   {if Configuration::get('GA_OPTIMIZE_ID')}
   ga('require', '{Configuration::get('GA_OPTIMIZE_ID')}');
