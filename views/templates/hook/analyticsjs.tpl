@@ -21,6 +21,30 @@
  * @license   http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
  * PrestaShop is an internationally registered trademark & property of PrestaShop SA
  *}
+
+<script>
+  {if Configuration::get('GA_GDPR_ENABLED')}
+    {literal}
+
+    var userAlreadyAcceptedCookies = function() {
+      var userAcceptedCookies = false;
+      var cookies = document.cookie.split(";");
+      for (var i = 0; i < cookies.length; i++) {
+        var c = cookies[i].trim();
+        if (c.indexOf('EU_COOKIE_LAW_CONSENT') == 0) {
+          userAcceptedCookies = c.substring('EU_COOKIE_LAW_CONSENT'.length + 1, c.length);
+        }
+      }
+
+      return userAcceptedCookies;
+    };
+
+    {/literal}
+    if(!userAlreadyAcceptedCookies())
+        window['ga-disable-{Configuration::get('GA_ACCOUNT_ID')|escape:'javascript':'UTF-8'}'] = true;
+
+  {/if}
+</script>
 {if Configuration::get('GA_OPTIMIZE_ID')}
 {literal}
   <style>.async-hide { opacity: 0 !important} </style>
