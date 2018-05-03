@@ -189,30 +189,6 @@ class Ganalytics extends Module
                 Configuration::updateValue('GA_IP_ENABLED', (bool) $gaIPEnabled);
                 $output .= $this->displayConfirmation($this->l('Settings for IP collection updated successfully'));
             }
-            $gaGDPREnabled = Tools::getValue('GA_GDPR_ENABLED');
-            if (null !== $gaGDPREnabled) {
-                Configuration::updateValue('GA_GDPR_ENABLED', (bool) $gaGDPREnabled);
-                $output .= $this->displayConfirmation($this->l('Settings for GDPR updated successfully'));
-            }
-
-            // Eu vars
-            $gaEuBgColor = Tools::getValue('GA_EU_BGCOLOR');
-            Configuration::updateValue('GA_EU_BGCOLOR', $gaEuBgColor);
-            $gaEuTextColor = Tools::getValue('GA_EU_TEXTCOLOR');
-            Configuration::updateValue('GA_EU_TEXTCOLOR', $gaEuTextColor);    
-            $gaEuBtnColor = Tools::getValue('GA_EU_BTNCOLOR');
-            Configuration::updateValue('GA_EU_BTNCOLOR', $gaEuBtnColor);    
-            $gaEuBtnTextColor = Tools::getValue('GA_EU_BTNTEXTCOLOR');
-            Configuration::updateValue('GA_EU_BTNTEXTCOLOR', $gaEuBtnTextColor);
-            foreach ($this->context->controller->getLanguages() as $lang) {
-                $gaEuContent = Tools::getValue('GA_EU_CONTENT_'.$lang['id_lang']);
-                Configuration::updateValue('GA_EU_CONTENT_'.$lang['id_lang'], $gaEuContent);
-                $gaEuBtnTxt = Tools::getValue('GA_EU_BTNTXT_'.$lang['id_lang']);
-                Configuration::updateValue('GA_EU_BTNTXT_'.$lang['id_lang'], $gaEuBtnTxt);
-            }
-            
-
-        
         }
 
         $output .= $this->displayForm();
@@ -235,7 +211,6 @@ class Ganalytics extends Module
 
         // Language
         $helper->default_form_language = $defaultLang;
-        $helper->languages = $this->context->controller->getLanguages();
         $helper->allow_employee_form_lang = $defaultLang;
 
         // Title and toolbar
@@ -320,25 +295,7 @@ class Ganalytics extends Module
                     'size'     => 20,
                     'required' => false,
                     'hint'     => $this->l('Time after which the script is loaded asynchronously'),
-                ],
-                [
-                    'type'   => 'radio',
-                    'label'  => $this->l('GDPR Mode'),
-                    'name'   => 'GA_GDPR_ENABLED',
-                    'hint'   => $this->l('This is used to comply with EU laws on data collection'),
-                    'values' => [
-                        [
-                            'id'    => 'ga_gdpr_enabled',
-                            'value' => 1,
-                            'label' => $this->l('Enabled'),
-                        ],
-                        [
-                            'id'    => 'ga_gdpr_disabled',
-                            'value' => 0,
-                            'label' => $this->l('Disabled'),
-                        ],
-                    ],
-                ],              
+                ],                
             ],
             'submit' => [
                 'title' => $this->l('Save'),
@@ -352,74 +309,6 @@ class Ganalytics extends Module
         $helper->fields_value['GA_IP_ENABLED'] = Configuration::get('GA_IP_ENABLED');
         $helper->fields_value['GA_OPTIMIZE_TIMER'] = Configuration::get('GA_OPTIMIZE_TIMER');
 
-
-        $helper->fields_value['GA_GDPR_ENABLED'] = Configuration::get('GA_GDPR_ENABLED');
-
-        // if($helper->fields_value['GA_GDPR_ENABLED'])
-        // {
-            // Init Fields form array
-            $fieldsForm[1]['form'] = [
-                'legend' => [
-                    'title' => $this->l('GDPR Compliancy'),
-                ],            
-                'input'  => [
-                    [
-                        'type'     => 'color',
-                        'label'    => $this->l('Background Color'),
-                        'name'     => 'GA_EU_BGCOLOR',
-                        'hint'     => $this->l('Color of the Eu Compliancy Popup Background'),
-                    ],
-                    [
-                        'type'     => 'color',
-                        'label'    => $this->l('Text Color'),
-                        'name'     => 'GA_EU_TEXTCOLOR',
-                    ],
-                    [
-                        'type'     => 'color',
-                        'label'    => $this->l('Button Color'),
-                        'name'     => 'GA_EU_BTNCOLOR',
-                    ],
-                    [
-                        'type'     => 'color',
-                        'label'    => $this->l('Button text Color'),
-                        'name'     => 'GA_EU_BTNTEXTCOLOR',
-                    ],
-                    [
-                        'type' => 'textarea',
-                        'label'    => $this->l('Notice Text'),
-                        'name' => 'GA_EU_CONTENT',
-                        'autoload_rte' => true,
-                        'lang' => true
-                    ],
-                    [
-                        'type' => 'text',
-                        'label'    => $this->l('Button Text'),
-                        'name' => 'GA_EU_BTNTXT',
-                        'lang' => true,
-                    ],
-
-                ],
-                'submit' => [
-                    'title' => $this->l('Save'),
-                ],
-            ];
-            // Eu thingy vars
-            $helper->fields_value['GA_EU_BGCOLOR'] = Configuration::get('GA_EU_BGCOLOR');
-            $helper->fields_value['GA_EU_BTNCOLOR'] = Configuration::get('GA_EU_BTNCOLOR');
-            $helper->fields_value['GA_EU_TEXTCOLOR'] = Configuration::get('GA_EU_TEXTCOLOR');
-            $helper->fields_value['GA_EU_BTNTEXTCOLOR'] = Configuration::get('GA_EU_BTNTEXTCOLOR');
-            foreach ($helper->languages as $language) {
-                $helper->fields_value['GA_EU_CONTENT'][$language['id_lang']] = Configuration::get('GA_EU_CONTENT_'.$language['id_lang']);
-                $helper->fields_value['GA_EU_BTNTXT'][$language['id_lang']] = Configuration::get('GA_EU_BTNTXT_'.$language['id_lang']);
-            }
-
-
-        // }
-     
-
-
-
-
         return $helper->generateForm($fieldsForm);
     }
 
@@ -430,8 +319,6 @@ class Ganalytics extends Module
      */
     public function hookHeader()
     {
-        $this->context->controller->addCSS($this->_path.'views/css/jquery-eu-cookie-law-popup.css', 'all');
-        $this->context->controller->addJS($this->_path.'views/js/jquery-eu-cookie-law-popup.js', 'all');
         if (Configuration::get('GA_ACCOUNT_ID')) {
             $this->context->controller->addJs($this->_path.'views/js/GoogleAnalyticActionLib.js');
 
@@ -682,18 +569,7 @@ class Ganalytics extends Module
             $gaScripts .= $this->addProductClick($products);
         }
 
-
-
-        $this->context->smarty->assign(array(
-            'GA_EU_BGCOLOR' => Configuration::get('GA_EU_BGCOLOR'),
-            'GA_EU_BTNCOLOR' => Configuration::get('GA_EU_BTNCOLOR'),
-            'GA_EU_TEXTCOLOR' => Configuration::get('GA_EU_TEXTCOLOR'),
-            'GA_EU_BTNTEXTCOLOR' => Configuration::get('GA_EU_BTNTEXTCOLOR'),
-            'GA_EU_CONTENT' => Configuration::get('GA_EU_CONTENT_'.$this->context->language->id),
-            'GA_EU_BTNTXT' => Configuration::get('GA_EU_BTNTXT_'.$this->context->language->id),
-        ));
-
-        return $this->display(__FILE__, 'views/templates/hook/gdpr.tpl').$this->generateAnayticsJs($gaScripts);
+        return $this->generateAnayticsJs($gaScripts);
     }
 
     /**
