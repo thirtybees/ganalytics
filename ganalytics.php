@@ -585,7 +585,7 @@ class Ganalytics extends Module
     {
         $resultProducts = [];
         if (!is_array($products)) {
-            return false;
+            return [];
         }
 
         $currency = new Currency($this->context->currency->id);
