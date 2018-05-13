@@ -12,3 +12,4 @@ description: description.md
 images:
   - image-1.png
 license: AFL
+gdpr_compliant: 1
