@@ -24,7 +24,7 @@
 {if Configuration::get('GA_OPTIMIZE_ID')}
 {literal}
   <style>.async-hide { opacity: 0 !important} </style>
-  <script>(function(a,s,y,n,c,h,i,d,e){s.className+=' '+y;h.start=1*new Date;
+  <script data-cookieconsent="statistics">(function(a,s,y,n,c,h,i,d,e){s.className+=' '+y;h.start=1*new Date;
       h.end=i=function(){s.className=s.className.replace(RegExp(' ?'+y),'')};
       (a[n]=a[n]||[]).hide=h;setTimeout(function(){i();h.end=null},c);h.timeout=c;
     })(window,document.documentElement,'async-hide','dataLayer',{/literal}{Configuration::get('GA_OPTIMIZE_TIMER')|escape:'javascript':'UTF-8'}{literal},
@@ -32,7 +32,7 @@
   </script>
 {/literal}
 {/if}
-<script type="text/javascript">
+<script type="text/javascript" data-cookieconsent="statistics">
   {literal}
   (window.gaDevIds=window.gaDevIds||[]).push('xhHp2h');
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -52,7 +52,7 @@
   {if $backOffice}ga('set', 'nonInteraction', true);{/if}
 </script>
 
-<script>
+<script type="text/javascript" data-cookieconsent="statistics">
   var isTracking = false;
   ga(function(tracker) {
     window.isTracking = true;
