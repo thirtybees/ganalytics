@@ -8,6 +8,7 @@ tags:
   - google analytics
   - eu law
   - gdpr
+  - ganalytics
 description_short: The Google Analytics module allows you to add your Google Analytics tracking code to your website.
 description: description.md
 images:
