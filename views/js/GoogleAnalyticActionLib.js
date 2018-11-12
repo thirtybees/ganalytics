@@ -116,7 +116,11 @@ var MBG = GoogleAnalyticEnhancedECommerce = {
     ga('send', 'event', 'Ecommerce', 'Refund', { 'nonInteraction': 1 });
   },
   addProductClick: function (Product) {
-    var ClickPoint = jQuery('a[href$="' + Product.url + '"].quick-view');
+    if(!Product.url) { return; }
+    var unsafeProductUrl = decodeURIComponent(Product.url);
+    var ClickPoint = jQuery('a[href].quick-view').filter(function () {
+        return jQuery(this).attr('href').indexOf(unsafeProductUrl) !== -1;
+    });
 
     ClickPoint.on("click", function () {
       GoogleAnalyticEnhancedECommerce.add(Product);
