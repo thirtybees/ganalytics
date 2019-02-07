@@ -93,15 +93,18 @@ class Ganalytics extends Module
             Shop::setContext(Shop::CONTEXT_ALL);
         }
 
-        if (!parent::install() || !$this->installTab() || !$this->registerHook('header') || !$this->registerHook('adminOrder')
-            || !$this->registerHook('footer') || !$this->registerHook('home')
-            || !$this->registerHook('productfooter') || !$this->registerHook('orderConfirmation')
-            || !$this->registerHook('backOfficeHeader') || !$this->registerHook('processCarrier')
+        if (!parent::install()
+            || !$this->installTab()
+            || !$this->registerHook('header')
+            || !$this->registerHook('adminOrder')
+            || !$this->registerHook('footer')
+            || !$this->registerHook('home')
+            || !$this->registerHook('productfooter')
+            || !$this->registerHook('orderConfirmation')
+            || !$this->registerHook('backOfficeHeader')
+            || !$this->registerHook('actionProductCancel')
+            || !$this->registerHook('actionCartSave')
         ) {
-            return false;
-        }
-
-        if (!$this->registerHook('actionProductCancel') || !$this->registerHook('actionCartSave')) {
             return false;
         }
 
@@ -405,19 +408,30 @@ class Ganalytics extends Module
      */
     public function hookOrderConfirmation($params)
     {
+        /** @var Order $order */
         $order = $params['objOrder'];
         if (Validate::isLoadedObject($order) && $order->getCurrentState() != (int) Configuration::get('PS_OS_ERROR')) {
             $gaOrderSent = Db::getInstance()->getValue('SELECT id_order FROM `'._DB_PREFIX_.'ganalytics` WHERE id_order = '.(int) $order->id);
             if ($gaOrderSent === false) {
                 Db::getInstance()->Execute('INSERT INTO `'._DB_PREFIX_.'ganalytics` (id_order, id_shop, sent, date_add) VALUES ('.(int) $order->id.', '.(int) $this->context->shop->id.', 0, NOW())');
                 if ($order->id_customer == $this->context->cookie->id_customer) {
+
+                    $gaScripts = '';
+
+                    if ((int)$order->id_carrier > 0) { // Not a order with virtual products only
+                        $carrierName = Db::getInstance()->getValue('SELECT name FROM ' . _DB_PREFIX_ . 'carrier WHERE id_carrier = ' . (int)$order->id_carrier);
+                        if ($carrierName) {
+                            $gaScripts .= 'MBG.addCheckoutOption(2, \'' . $carrierName . '\');' . "\n";
+                        }
+                    }
+
                     $orderProducts = [];
                     $cart = new Cart($order->id_cart);
                     foreach ($cart->getProducts() as $orderProduct) {
                         $orderProducts[] = $this->wrapProduct($orderProduct, [], 0, true);
                     }
 
-                    $gaScripts = 'MBG.addCheckoutOption(3,\''.$order->payment.'\');';
+                    $gaScripts .= 'MBG.addCheckoutOption(3, \''.$order->payment.'\');' . "\n";
 
                     $transaction = [
                         'id'          => $order->id,
@@ -1071,19 +1085,6 @@ class Ganalytics extends Module
 
             $gacart[$idProduct] = $gaProducts;
             $this->context->cookie->ga_cart = json_encode($gacart);
-        }
-    }
-
-    /**
-     * @param array $params
-     * @throws PrestaShopDatabaseException
-     * @throws PrestaShopException
-     */
-    public function hookProcessCarrier($params)
-    {
-        if (isset($params['cart']->id_carrier)) {
-            $carrierName = Db::getInstance()->getValue('SELECT name FROM `'._DB_PREFIX_.'carrier` WHERE id_carrier = '.(int) $params['cart']->id_carrier);
-            $this->context->cookie->ga_cart .= 'MBG.addCheckoutOption(2,\''.$carrierName.'\');';
         }
     }
 
