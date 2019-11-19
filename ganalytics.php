@@ -52,7 +52,7 @@ class Ganalytics extends Module
     {
         $this->name = 'ganalytics';
         $this->tab = 'analytics_stats';
-        $this->version = '3.3.5';
+        $this->version = '3.3.6';
         $this->author = 'thirty bees';
         $this->bootstrap = true;
 
