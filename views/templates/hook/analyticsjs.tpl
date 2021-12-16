@@ -53,33 +53,20 @@
 </script>
 
 <script type="text/javascript" data-cookieconsent="statistics">
-  var isTracking = false;
-  ga(function(tracker) {
-    window.isTracking = true;
+  window.gaIsTracking = false;
+  ga(function() {
+    window.gaIsTracking = true;
   });
   setTimeout(function(){
-    if(!isTracking)
-    {
-      function uuidv4() {
-        var uuid = "", i, random;
-        for (i = 0; i < 32; i++) {
-          random = Math.random() * 16 | 0;
-          if (i == 8 || i == 12 || i == 16 || i == 20) {
-            uuid += "-"
-          }
-          uuid += (i == 12 ? 4 : (i == 16 ? (random & 3 | 8) : random)).toString(16);
-        }
-        return uuid;
-      }
-
+    if (! window.gaIsTracking) {
       $.ajax({
         type: 'post',
-        data: "trackid={Configuration::get('GA_ACCOUNT_ID')|escape:'javascript':'UTF-8'}&site="+baseDir+"&page="+location.pathname+'&uid='+uuidv4(),
-        url: baseDir + 'modules/ganalytics/ajax.php',
+        data: "page="+location.pathname,
+        url: '{$serverTrackUrl|escape:'javascript':'UTF-8'}',
         success: function(data) {
         }
       })
     }
-  }, 5000)
+  }, 2500);
 
 </script>

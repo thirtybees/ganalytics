@@ -61,6 +61,7 @@ class Ganalytics extends Module
         $this->displayName = $this->l('Google Analytics');
         $this->description = $this->l('Gain clear insights into important metrics about your customers, using Google Analytics');
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall Google Analytics? You will lose all the data related to this module.');
+        $this->controllers = ['ajax', 'track'];
     }
 
     /**
@@ -342,6 +343,7 @@ class Ganalytics extends Module
             'userId'        => $userId,
             'IP_ENABLED'    => Configuration::get('GA_IP_ENABLED'),
             'backOffice'    => $backOffice,
+            'serverTrackUrl'=> Context::getContext()->link->getModuleLink($this->name, 'track'),
         ]);
 
         return $this->display(__FIlE__, 'views/templates/hook/analyticsjs.tpl');

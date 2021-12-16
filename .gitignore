@@ -1,1 +1,7 @@
-*ganalytics*.zip
+/translations/*
+!/translations/index.php
+
+/config*.xml
+
+ganalytics-*.zip
+
