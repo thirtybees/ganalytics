@@ -55,6 +55,7 @@ class Ganalytics extends Module
         $this->version = '3.4.0';
         $this->author = 'thirty bees';
         $this->bootstrap = true;
+        $this->need_instance = false;
 
         parent::__construct();
 
