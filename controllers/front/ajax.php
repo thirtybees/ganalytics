@@ -37,6 +37,9 @@ class GanalyticsAjaxModuleFrontController extends ModuleFrontController
 
     /**
      * Initialize the content of this controller
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function initContent()
     {

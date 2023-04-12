@@ -27,6 +27,13 @@ if (!defined('_TB_VERSION_')) {
     exit;
 }
 
+/**
+ * @param Ganalytics $object
+ *
+ * @return bool
+ *
+ * @throws PrestaShopException
+ */
 function upgrade_module_2_0_5($object)
 {
     Configuration::updateValue('GANALYTICS', '2.0.5');

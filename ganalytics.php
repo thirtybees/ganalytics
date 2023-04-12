@@ -32,21 +32,36 @@ if (!defined('_TB_VERSION_')) {
  */
 class Ganalytics extends Module
 {
-    // @codingStandardsIgnoreStart
-    /** @var array $products */
+    /**
+     * @var array $products
+     */
     protected static $products = [];
-    /** @var int $js_state */
+
+    /**
+     * @var int $js_state
+     */
     protected $js_state = 0;
-    /** @var int $eligible */
+
+    /**
+     * @var int $eligible
+     */
     protected $eligible = 0;
-    /** @var int $filterable */
+
+    /**
+     * @var int $filterable
+     */
     protected $filterable = 1;
-    /** @var int $debugAnalytics */
+
+    /**
+     * @var int $debugAnalytics
+     */
     protected $debugAnalytics = 0;
-    // @codingStandardsIgnoreEnd
 
     /**
      * Ganalytics constructor.
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function __construct()
     {
@@ -69,6 +84,8 @@ class Ganalytics extends Module
      * Install this module
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function install()
     {
@@ -116,7 +133,9 @@ class Ganalytics extends Module
     /**
      * Install a tab for this module
      *
-     * @return bool|int
+     * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function installTab()
     {
@@ -137,6 +156,8 @@ class Ganalytics extends Module
      * Uninstall this module
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function uninstall()
     {
@@ -151,6 +172,8 @@ class Ganalytics extends Module
      * Uninstall tabs for this module
      *
      * @return bool
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function uninstallTab()
     {
@@ -166,6 +189,10 @@ class Ganalytics extends Module
 
     /**
      * back office module configuration page content
+     * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function getContent()
     {
@@ -198,6 +225,12 @@ class Ganalytics extends Module
         return $this->display(__FILE__, 'views/templates/admin/configuration.tpl').$output;
     }
 
+    /**
+     * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
     public function displayForm()
     {
         // Get default language
@@ -318,6 +351,8 @@ class Ganalytics extends Module
      * Hook to `head` tags
      *
      * @return string
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function hookHeader()
     {
@@ -330,6 +365,14 @@ class Ganalytics extends Module
         return '';
     }
 
+    /**
+     * @param bool $backOffice
+     *
+     * @return string
+     *
+     * @throws PrestaShopException
+     * @throws SmartyException
+     */
     protected function getGoogleAnalyticsTag($backOffice = false)
     {
         $userId = null;
@@ -356,6 +399,9 @@ class Ganalytics extends Module
      * @param array $params
      *
      * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function hookOrderConfirmation($params)
     {
@@ -396,11 +442,12 @@ class Ganalytics extends Module
      * wrap product to provide a standard product information for google analytics script
      *
      * @param array $product
-     * @param array $extras
-     * @param int   $index
-     * @param bool  $full
+     * @param array|null $extras
+     * @param int $index
+     * @param bool $full
      *
      * @return array
+     * @throws PrestaShopException
      */
     public function wrapProduct($product, $extras, $index = 0, $full = false)
     {
@@ -488,9 +535,11 @@ class Ganalytics extends Module
      * Generate Google Analytics js
      *
      * @param string $jsCode
-     * @param int    $backoffice
+     * @param int $backoffice
      *
      * @return string
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     protected function generateAnayticsJs($jsCode, $backoffice = 0)
     {
@@ -519,6 +568,11 @@ class Ganalytics extends Module
 
     /**
      * hook footer to load JS script for standards actions such as product clicks
+     *
+     * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function hookFooter()
     {
@@ -580,9 +634,11 @@ class Ganalytics extends Module
      *
      * @param array $products
      * @param array $extras
-     * @param bool  $full
+     * @param bool $full
      *
-     * @return false|array
+     * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function wrapProducts($products, $extras = [], $full = false)
     {
@@ -677,6 +733,10 @@ class Ganalytics extends Module
 
     /**
      * hook home to display generate the product list associated to home featured, news products and best sellers Modules
+     * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function hookHome()
     {
@@ -725,7 +785,9 @@ class Ganalytics extends Module
      *
      * @param string $name
      *
-     * @return bool|false|null|string
+     * @return false|int
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function isModuleEnabled($name)
     {
@@ -759,6 +821,8 @@ class Ganalytics extends Module
      * @param array $params
      *
      * @return string
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function hookProductFooter($params)
     {
@@ -778,6 +842,11 @@ class Ganalytics extends Module
         }
     }
 
+    /**
+     * @param array $products
+     *
+     * @return string|void
+     */
     public function addProductClickByHttpReferal($products)
     {
         if (!is_array($products)) {
@@ -794,6 +863,8 @@ class Ganalytics extends Module
 
     /**
      * Hook admin order to send transactions and refunds details
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function hookAdminOrder()
     {
@@ -805,6 +876,9 @@ class Ganalytics extends Module
      * admin office header to add google analytics js
      *
      * @return string
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
+     * @throws SmartyException
      */
     public function hookBackOfficeHeader()
     {
@@ -860,6 +934,8 @@ class Ganalytics extends Module
      * @param int $idOrder
      *
      * @return array
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function wrapOrder($idOrder)
     {
@@ -882,6 +958,11 @@ class Ganalytics extends Module
 
     /**
      * Hook admin office header to add google analytics js
+     *
+     * @param array $params
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function hookActionProductCancel($params)
     {
@@ -902,6 +983,7 @@ class Ganalytics extends Module
 
     /**
      * hook save cart event to implement addtocart and remove from cart functionality
+     * @throws PrestaShopException
      */
     public function hookActionCartSave()
     {
@@ -986,6 +1068,8 @@ class Ganalytics extends Module
 
     /**
      * @param array $params
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function hookProcessCarrier($params)
     {

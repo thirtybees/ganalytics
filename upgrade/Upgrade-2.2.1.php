@@ -27,6 +27,13 @@ if (!defined('_TB_VERSION_')) {
     exit;
 }
 
+/**
+ * @param Ganalytics $object
+ *
+ * @return true
+ *
+ * @throws PrestaShopException
+ */
 function upgrade_module_2_2_1($object)
 {
     Configuration::updateValue('GA_USERID_ENABLED', false);

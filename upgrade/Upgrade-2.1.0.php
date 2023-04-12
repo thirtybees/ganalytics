@@ -27,6 +27,11 @@ if (!defined('_TB_VERSION_')) {
     exit;
 }
 
+/**
+ * @return bool
+ * @throws PrestaShopDatabaseException
+ * @throws PrestaShopException
+ */
 function upgrade_module_2_1_0()
 {
     Configuration::updateValue('GANALYTICS', '2.1.0');

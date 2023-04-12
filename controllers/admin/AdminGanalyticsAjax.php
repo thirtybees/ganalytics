@@ -37,6 +37,9 @@ class AdminGanalyticsAjaxController extends ModuleAdminController
 
     /**
      * Initialize this controller
+     *
+     * @throws PrestaShopDatabaseException
+     * @throws PrestaShopException
      */
     public function init()
     {
