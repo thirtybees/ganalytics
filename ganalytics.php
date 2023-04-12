@@ -398,7 +398,7 @@ class Ganalytics extends Module
      *
      * @param array $params
      *
-     * @return string
+     * @return string|null
      * @throws PrestaShopDatabaseException
      * @throws PrestaShopException
      * @throws SmartyException
@@ -436,6 +436,7 @@ class Ganalytics extends Module
                 }
             }
         }
+        return null;
     }
 
     /**
@@ -840,6 +841,7 @@ class Ganalytics extends Module
 
             return $this->generateAnayticsJs($js);
         }
+        return null;
     }
 
     /**
@@ -885,18 +887,20 @@ class Ganalytics extends Module
         Media::addJsDef(['baseDir' => Tools::getShopProtocol().Tools::getHttpHost().__PS_BASE_URI__]);
 
         $js = '';
+        /** @var AdminController $controller */
+        $controller = $this->context->controller;
         if (strcmp(Tools::getValue('configure'), $this->name) === 0) {
-            $this->context->controller->addCSS($this->_path.'views/css/ganalytics.css');
+            $controller->addCSS($this->_path.'views/css/ganalytics.css');
         }
 
         $gaAccountId = Configuration::get('GA_ACCOUNT_ID');
 
         if (!empty($gaAccountId) && $this->active) {
-            $this->context->controller->addJs($this->_path.'views/js/GoogleAnalyticActionLib.js');
+            $controller->addJs($this->_path.'views/js/GoogleAnalyticActionLib.js');
             $this->context->smarty->assign('GA_ACCOUNT_ID', $gaAccountId);
 
             $gaScripts = '';
-            if ($this->context->controller->controller_name == 'AdminOrders') {
+            if ($controller->controller_name == 'AdminOrders') {
                 if (Tools::getValue('id_order')) {
                     $order = new Order((int) Tools::getValue('id_order'));
                     if (Validate::isLoadedObject($order) && strtotime('+1 day', strtotime($order->date_add)) > time()) {
@@ -1034,7 +1038,7 @@ class Ganalytics extends Module
             self::$products[] = (int) Tools::getValue('id_product');
             $gaProducts = $this->wrapProduct($addProduct, $cart, 0, true);
 
-            if (array_key_exists('id_product_attribute', $gaProducts) && $gaProducts['id_product_attribute'] != '' && $gaProducts['id_product_attribute'] != 0) {
+            if (array_key_exists('id_product_attribute', $gaProducts) && $gaProducts['id_product_attribute'] != 0) {
                 $idProduct = $gaProducts['id_product_attribute'];
             } else {
                 $idProduct = Tools::getValue('id_product');
