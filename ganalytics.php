@@ -33,7 +33,7 @@ if (!defined('_TB_VERSION_')) {
 class Ganalytics extends Module
 {
     /**
-     * @var array $products
+     * @var int[] $products
      */
     protected static $products = [];
 
@@ -448,6 +448,7 @@ class Ganalytics extends Module
      * @param bool $full
      *
      * @return array
+     *
      * @throws PrestaShopException
      */
     public function wrapProduct($product, $extras, $index = 0, $full = false)
@@ -461,22 +462,22 @@ class Ganalytics extends Module
 
         $productQty = 1;
         if (isset($extras['qty'])) {
-            $productQty = $extras['qty'];
+            $productQty = (int)$extras['qty'];
         } elseif (isset($product['cart_quantity'])) {
-            $productQty = $product['cart_quantity'];
+            $productQty = (int)$product['cart_quantity'];
         }
 
         $productId = 0;
         if (!empty($product['id_product'])) {
-            $productId = $product['id_product'];
+            $productId = (int)$product['id_product'];
         } else {
             if (!empty($product['id'])) {
-                $productId = $product['id'];
+                $productId = (int)$product['id'];
             }
         }
 
         if (!empty($product['id_product_attribute'])) {
-            $productId .= '-'.$product['id_product_attribute'];
+            $productId .= '-' . (int)$product['id_product_attribute'];
         }
 
         $productType = 'typical';
@@ -494,11 +495,11 @@ class Ganalytics extends Module
                 'brand'    => isset($product['manufacturer_name']) ? Tools::str2url($product['manufacturer_name']) : '',
                 'variant'  => Tools::str2url($variant),
                 'type'     => $productType,
-                'position' => $index ? $index : '0',
+                'position' => (int)$index,
                 'quantity' => $productQty,
-                'list'     => Tools::getValue('controller'),
+                'list'     => $this->getControllerName(),
                 'url'      => isset($product['link']) ? urlencode($product['link']) : '',
-                'price'    => number_format($product['price'], 2, '.', ''),
+                'price'    => number_format((float)$product['price'], 2, '.', ''),
             ];
         } else {
             $gaProduct = [
@@ -597,7 +598,7 @@ class Ganalytics extends Module
             unset($this->context->cookie->ga_cart);
         }
 
-        $controllerName = Tools::getValue('controller');
+        $controllerName = $this->getControllerName();
         $templateVars = $this->context->smarty->getTemplateVars('products');
         if (is_string($templateVars)) {
             $templateVars = [$templateVars];
@@ -607,10 +608,7 @@ class Ganalytics extends Module
         if ($controllerName == 'order' || $controllerName == 'orderopc') {
             $this->js_state = 1;
             $this->eligible = 1;
-            $step = Tools::getValue('step');
-            if (empty($step)) {
-                $step = 0;
-            }
+            $step = (int)Tools::getValue('step');
             $gaScripts .= $this->addProductFromCheckout($products);
             $gaScripts .= 'MBG.addCheckout(\''.(int) $step.'\');';
         }
@@ -827,7 +825,7 @@ class Ganalytics extends Module
      */
     public function hookProductFooter($params)
     {
-        $controllerName = Tools::getValue('controller');
+        $controllerName = $this->getControllerName();
         if ($controllerName === 'product') {
             // Add product view
             $gaProduct = $this->wrapProduct((array) $params['product'], null, 0, true);
@@ -901,12 +899,13 @@ class Ganalytics extends Module
 
             $gaScripts = '';
             if ($controller->controller_name == 'AdminOrders') {
-                if (Tools::getValue('id_order')) {
-                    $order = new Order((int) Tools::getValue('id_order'));
+                $orderId = (int)Tools::getValue('id_order');
+                if ($orderId) {
+                    $order = new Order($orderId);
                     if (Validate::isLoadedObject($order) && strtotime('+1 day', strtotime($order->date_add)) > time()) {
-                        $gaOrderSent = Db::getInstance()->getValue('SELECT id_order FROM `'._DB_PREFIX_.'ganalytics` WHERE id_order = '.(int) Tools::getValue('id_order'));
+                        $gaOrderSent = Db::getInstance()->getValue('SELECT id_order FROM `'._DB_PREFIX_.'ganalytics` WHERE id_order = '. $orderId);
                         if ($gaOrderSent === false) {
-                            Db::getInstance()->Execute('INSERT IGNORE INTO `'._DB_PREFIX_.'ganalytics` (id_order, id_shop, sent, date_add) VALUES ('.(int) Tools::getValue('id_order').', '.(int) $this->context->shop->id.', 0, NOW())');
+                            Db::getInstance()->Execute('INSERT IGNORE INTO `'._DB_PREFIX_.'ganalytics` (id_order, id_shop, sent, date_add) VALUES ('. $orderId .', '.(int) $this->context->shop->id.', 0, NOW())');
                         }
                     }
                 } else {
@@ -975,18 +974,21 @@ class Ganalytics extends Module
         foreach ($quantityRefunded as $idOrderDetail => $qty) {
             // Display GA refund product
             $orderDetail = new OrderDetail($idOrderDetail);
-            $gaScripts .= 'MBG.add('.json_encode(
-                [
-                    'id'       => empty($orderDetail->product_attribute_id) ? $orderDetail->product_id : $orderDetail->product_id.'-'.$orderDetail->product_attribute_id,
-                    'quantity' => $qty,
-                ]
-            ).');';
+            if (Validate::isLoadedObject($orderDetail)) {
+                $gaScripts .= 'MBG.add(' . json_encode(
+                        [
+                            'id' => empty($orderDetail->product_attribute_id) ? $orderDetail->product_id : $orderDetail->product_id . '-' . $orderDetail->product_attribute_id,
+                            'quantity' => (int)$qty,
+                        ]
+                    ) . ');';
+            }
         }
         $this->context->cookie->ga_admin_refund = $gaScripts.'MBG.refundByProduct('.json_encode(['id' => $params['order']->id]).');';
     }
 
     /**
      * hook save cart event to implement addtocart and remove from cart functionality
+     *
      * @throws PrestaShopException
      */
     public function hookActionCartSave()
@@ -995,12 +997,14 @@ class Ganalytics extends Module
             return;
         }
 
-        if (!Tools::getIsset('id_product')) {
+        $productIdParameter = (int)Tools::getValue('id_product');
+
+        if (! $productIdParameter) {
             return;
         }
 
         $cart = [
-            'controller'   => Tools::getValue('controller'),
+            'controller'   => $this->getControllerName(),
             'addAction'    => Tools::getValue('add') ? 'add' : '',
             'removeAction' => Tools::getValue('delete') ? 'delete' : '',
             'extraAction'  => Tools::getValue('op'),
@@ -1010,14 +1014,14 @@ class Ganalytics extends Module
         $cartProducts = $this->context->cart->getProducts();
         if (isset($cartProducts) && count($cartProducts)) {
             foreach ($cartProducts as $cartProduct) {
-                if ($cartProduct['id_product'] == Tools::getValue('id_product')) {
+                if ((int)$cartProduct['id_product'] === $productIdParameter) {
                     $addProduct = $cartProduct;
                 }
             }
         }
 
         if ($cart['removeAction'] == 'delete') {
-            $addProductObject = new Product((int) Tools::getValue('id_product'), true, (int) Configuration::get('PS_LANG_DEFAULT'));
+            $addProductObject = new Product($productIdParameter, true, (int) Configuration::get('PS_LANG_DEFAULT'));
             if (Validate::isLoadedObject($addProductObject)) {
                 $addProduct['name'] = $addProductObject->name;
                 $addProduct['manufacturer_name'] = $addProductObject->manufacturer_name;
@@ -1027,21 +1031,21 @@ class Ganalytics extends Module
                 $addProduct['link'] = $addProductObject->link_rewrite;
                 $addProduct['price'] = $addProductObject->price;
                 $addProduct['ean13'] = $addProductObject->ean13;
-                $addProduct['id_product'] = Tools::getValue('id_product');
-                $addProduct['id_category_default'] = $addProductObject->id_category_default;
+                $addProduct['id_product'] = (int)$addProductObject->id;
+                $addProduct['id_category_default'] = (int)$addProductObject->id_category_default;
                 $addProduct['out_of_stock'] = $addProductObject->out_of_stock;
                 $addProduct = Product::getProductProperties((int) Configuration::get('PS_LANG_DEFAULT'), $addProduct);
             }
         }
 
-        if (isset($addProduct) && !in_array((int) Tools::getValue('id_product'), self::$products)) {
-            self::$products[] = (int) Tools::getValue('id_product');
+        if (isset($addProduct) && !in_array($productIdParameter, self::$products)) {
+            self::$products[] = $productIdParameter;
             $gaProducts = $this->wrapProduct($addProduct, $cart, 0, true);
 
             if (array_key_exists('id_product_attribute', $gaProducts) && $gaProducts['id_product_attribute'] != 0) {
                 $idProduct = $gaProducts['id_product_attribute'];
             } else {
-                $idProduct = Tools::getValue('id_product');
+                $idProduct = $productIdParameter;
             }
 
             if (isset($this->context->cookie->ga_cart)) {
@@ -1058,7 +1062,7 @@ class Ganalytics extends Module
                 } else {
                     $gaProducts['quantity'] = $cart['qty'] * -1;
                 }
-            } elseif (Tools::getValue('step') <= 0) {
+            } elseif ((int)Tools::getValue('step') <= 0) {
                 // Sometimes cartsave is called in checkout
                 if (array_key_exists($idProduct, $gacart)) {
                     $gaProducts['quantity'] = $gacart[$idProduct]['quantity'] + $cart['qty'];
@@ -1100,5 +1104,19 @@ class Ganalytics extends Module
         fwrite($fh, date('F j, Y, g:i a').' '.$function."\n");
         fwrite($fh, print_r($log, true)."\n\n");
         fclose($fh);
+    }
+
+    /**
+     * Returns controller name
+     *
+     * @return string
+     */
+    protected function getControllerName()
+    {
+        $controller = Tools::getValue('controller');
+        if (Validate::isControllerName($controller)) {
+            return $controller;
+        }
+        return '';
     }
 }
