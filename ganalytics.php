@@ -491,7 +491,7 @@ class Ganalytics extends Module
             $gaProduct = [
                 'id'       => $productId,
                 'name'     => Tools::str2url($product['name']),
-                'category' => Tools::str2url($product['category']),
+                'category' => isset($product['category']) ? Tools::str2url($product['category']) : '',
                 'brand'    => isset($product['manufacturer_name']) ? Tools::str2url($product['manufacturer_name']) : '',
                 'variant'  => Tools::str2url($variant),
                 'type'     => $productType,
